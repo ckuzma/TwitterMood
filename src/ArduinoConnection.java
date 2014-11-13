@@ -8,12 +8,17 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 
 
-public class ConnectionToArduino implements SerialPortEventListener {
+public class ArduinoConnection implements SerialPortEventListener {
     static SerialPort serialPort = null;
 
     private static final String PORT_NAMES[] = { 
+    	
+    	/*
+    	 * If using a machine other than a Macintosh, or to use a different port, then
+    	 * comment out the appropriate line and uncomment / add the port you need.
+    	 */
+    	
         "/dev/tty.usbmodem", // Mac OS X
-        
         //"/dev/usbdev", // Linux
         //"/dev/tty", // Linux
         //"/dev/serial", // Linux

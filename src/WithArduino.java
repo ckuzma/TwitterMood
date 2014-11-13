@@ -9,9 +9,11 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class MoodRunnableArduino{
+public class WithArduino{
+	Credentials credentials = new Credentials(); //This is to prevent me from sharing my own keys
+	
 	public void moodStart() throws Exception{
-		ConnectionToArduino arduino = new ConnectionToArduino();
+		ArduinoConnection arduino = new ArduinoConnection();
     	arduino.initialize();
 		int r = 0;
 		while (r < 100){
@@ -33,44 +35,34 @@ public class MoodRunnableArduino{
 				x+=1;
 			}
 			
-			// Anything more than 15 means more happy than not
-			/*
-			// Begin switch
+			// Begin Arduino Light Switch
 			if (happy >= 0 && happy < 4){
-				arduino.sendData("0010000000000");
-				System.out.println("Twitter is super sad." + "(" + String.valueOf(happy) + ")");
+				arduino.sendData("10000000");
 			}
 			if (happy >= 4 && happy < 8){
-				arduino.sendData("0001000000000");
-				System.out.println("Twitter is very sad." + "(" + String.valueOf(happy) + ")");
+				arduino.sendData("01000000");
 			}
 			if (happy >= 8 && happy < 12){
-				arduino.sendData("0000100000000");
-				System.out.println("Twitter is sad happy." + "(" + String.valueOf(happy) + ")");
+				arduino.sendData("00100000");
 			}
 			if (happy >= 12 && happy < 16){
-				arduino.sendData("0000010000000");
-				System.out.println("Twitter is alight." + "(" + String.valueOf(happy) + ")");
+				arduino.sendData("00010000");
 			}
 			if (happy >= 16 && happy < 20){
-				arduino.sendData("0000001000000");
-				System.out.println("Twitter is happy." + "(" + String.valueOf(happy) + ")");
+				arduino.sendData("00001000");
 			}
 			if (happy >= 20 && happy < 24){
-				arduino.sendData("0000000100000");
-				System.out.println("Twitter is quite happy." + "(" + String.valueOf(happy) + ")");
+				arduino.sendData("00000100");
 			}
 			if (happy >= 24 && happy < 28){
-				arduino.sendData("0000000010000");
-				System.out.println("Twitter is very happy." + "(" + String.valueOf(happy) + ")");
+				arduino.sendData("00000010");
 			}
 			if (happy >= 28 && happy < 31){
-				arduino.sendData("0000000001000");
-				System.out.println("Twitter is really happy." + "(" + String.valueOf(happy) + ")");
+				arduino.sendData("00000001");
 			}
-			*/
-			
-			// generate before part
+			// End Arduino Light Switch
+
+			// Begin visual graph
 			x = 0;
 			String before = "";
 			while(x < happy){
@@ -83,25 +75,24 @@ public class MoodRunnableArduino{
 				x+=1;
 			}
 			System.out.println("Sad |" + before + "X" + after + "| Happy / (Value = " + String.valueOf(happy) + ")");
+			// End visual graph
 
-
-			Thread.sleep(4000);
+			Thread.sleep(10000);
 		}
-		arduino.close();
+		
+		arduino.close(); // This never seems to work
 	}
 	
-	// repeat twitter class
-
 
 
 	public List<String> find(String searchQuery) {
 		String searchResults = "";
 	    ConfigurationBuilder cb = new ConfigurationBuilder();
-	    cb.setDebugEnabled(true)
-	          .setOAuthConsumerKey("")
-	          .setOAuthConsumerSecret("")
-	          .setOAuthAccessToken("")
-	          .setOAuthAccessTokenSecret("");
+	    cb.setDebugEnabled(true);
+	    cb.setOAuthConsumerKey(credentials.twitterConsumerKey);
+	    cb.setOAuthConsumerSecret(credentials.twitterConsumerSecret);
+	    cb.setOAuthAccessToken(credentials.twitterAccessToken);
+	    cb.setOAuthAccessTokenSecret(credentials.twitterAccessSecret);
 	    TwitterFactory tf = new TwitterFactory(cb.build());
 	    Twitter twitter = tf.getInstance();
 	    List<String> tweetList = new ArrayList<String>();
@@ -111,26 +102,14 @@ public class MoodRunnableArduino{
 	            result = twitter.search(query);
 	            List<Status> tweets = result.getTweets();
 	            for (Status tweet : tweets) {
-	            	// These are just some examples of what can be done:
-	            	/*
-	                System.out.println("@" + tweet.getUser().getScreenName() + " - " + tweet.getText());
-	                System.out.println(tweet.getCreatedAt());
-	                */
-
-	            	tweetList.add(tweet.getText());
-	            	
-	            	
+	            	tweetList.add(tweet.getText()); //Collect each tweet one by one
 	            }
 
-	            
-
-	            //System.exit(-1);
 	        } catch (TwitterException te) {
 	            te.printStackTrace();
 	            System.out.println("Failed to search tweets: " + te.getMessage());
-	            //System.exit(-1);
 	        }
-	        return tweetList;
+	        return tweetList; //Return the collected list of tweets
 	}
 	
 }

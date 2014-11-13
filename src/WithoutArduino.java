@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.ArrayList;
+
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Status;
@@ -8,9 +9,10 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class MoodRunnableNoDuino{
+public class WithoutArduino{
+	Credentials credentials = new Credentials(); //This is to prevent me from sharing my own keys
+	
 	public void moodStart() throws Exception{
-		
 		int r = 0;
 		while (r < 100){
 			List<String> tweets = find("#happy OR #sad OR #mad OR #glad");
@@ -32,36 +34,7 @@ public class MoodRunnableNoDuino{
 			}
 			String below = "";
 			
-			// Anything more than 15 means more happy than not
-			/*
-			// Begin switch
-			if (happy >= 0 && happy < 4){
-				System.out.println("Twitter is super sad." + "(" + String.valueOf(happy) + ")");
-			}
-			if (happy >= 4 && happy < 8){
-				System.out.println("Twitter is very sad." + "(" + String.valueOf(happy) + ")");
-			}
-			if (happy >= 8 && happy < 12){
-				System.out.println("Twitter is sad happy." + "(" + String.valueOf(happy) + ")");
-			}
-			if (happy >= 12 && happy < 16){
-				System.out.println("Twitter is alight." + "(" + String.valueOf(happy) + ")");
-			}
-			if (happy >= 16 && happy < 20){
-				System.out.println("Twitter is happy." + "(" + String.valueOf(happy) + ")");
-			}
-			if (happy >= 20 && happy < 24){
-				System.out.println("Twitter is quite happy." + "(" + String.valueOf(happy) + ")");
-			}
-			if (happy >= 24 && happy < 28){
-				System.out.println("Twitter is very happy." + "(" + String.valueOf(happy) + ")");
-			}
-			if (happy >= 28 && happy < 31){
-				System.out.println("Twitter is really happy." + "(" + String.valueOf(happy) + ")");
-			}
-			*/
-			
-			// generate before part
+			// Begin visual graph
 			x = 0;
 			String before = "";
 			while(x < happy){
@@ -74,25 +47,24 @@ public class MoodRunnableNoDuino{
 				x+=1;
 			}
 			System.out.println("Sad |" + before + "X" + after + "| Happy / (Value = " + String.valueOf(happy) + ")");
-
+			// End visual graph
 			
-			Thread.sleep(4000);
+			Thread.sleep(10000);
 		}
 
 	}
 	
-	// repeat twitter class
 
 
 
 	public List<String> find(String searchQuery) {
 		String searchResults = "";
 	    ConfigurationBuilder cb = new ConfigurationBuilder();
-	    cb.setDebugEnabled(true)
-	          .setOAuthConsumerKey("")
-	          .setOAuthConsumerSecret("")
-	          .setOAuthAccessToken("")
-	          .setOAuthAccessTokenSecret("");
+	    cb.setDebugEnabled(true);
+	    cb.setOAuthConsumerKey(credentials.twitterConsumerKey);
+	    cb.setOAuthConsumerSecret(credentials.twitterConsumerSecret);
+	    cb.setOAuthAccessToken(credentials.twitterAccessToken);
+	    cb.setOAuthAccessTokenSecret(credentials.twitterAccessSecret);
 	    TwitterFactory tf = new TwitterFactory(cb.build());
 	    Twitter twitter = tf.getInstance();
 	    List<String> tweetList = new ArrayList<String>();
